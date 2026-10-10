@@ -1,0 +1,3 @@
+export const POLICE_TURN_MS=90000;
+export function policeTurn(players,created,now){if(players.length<2)return {id:null,seconds:0};const turn=Math.floor(Math.max(0,now-created)/POLICE_TURN_MS);return {id:players[turn%players.length].id,seconds:Math.ceil((POLICE_TURN_MS-(Math.max(0,now-created)%POLICE_TURN_MS))/1000)};}
+export function canTag(officer,rider,dz,now){return !officer.state.parked&&!rider.state.parked&&now-officer.lastHit>=2200&&now-rider.lastHit>=5000&&Math.abs(officer.state.x-rider.state.x)<1.1&&Math.abs(dz)<2.5&&Math.abs(officer.state.y-rider.state.y)<1.2&&Math.max(officer.state.speed,rider.state.speed)>8;}

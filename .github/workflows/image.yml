@@ -1,0 +1,20 @@
+name: Publish Docker image
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USER: ${{ github.actor }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GH_USER" --password-stdin
+          docker build -t ghcr.io/virtualhowto/volt-run-neon-pursuit:${GITHUB_SHA} -t ghcr.io/virtualhowto/volt-run-neon-pursuit:latest .
+          docker push ghcr.io/virtualhowto/volt-run-neon-pursuit:${GITHUB_SHA}
+          docker push ghcr.io/virtualhowto/volt-run-neon-pursuit:latest

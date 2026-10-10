@@ -1,0 +1,5 @@
+export const PARTS={motor:{name:'Motor controller',description:'+8 km/h top speed and stronger acceleration per level',cost:[100,250,500]},battery:{name:'High output battery',description:'+25% boost capacity per level',cost:[80,200,400]},handling:{name:'Suspension & tyres',description:'+12% steering response and higher ramp launch per level',cost:[75,175,350]}};
+export function cleanSave(s={}){s=s&&typeof s==='object'?s:{};const n=v=>Number.isFinite(v)?Math.max(0,Math.floor(v)):0;return {creds:n(s.creds),rep:n(s.rep),remainder:n(s.remainder)%10,levels:Object.fromEntries(Object.keys(PARTS).map(k=>[k,Math.min(3,n(s.levels?.[k]))]))};}
+export function earn(s,points){points=Math.max(0,Math.floor(points));s.rep+=points;const value=s.remainder+points;s.creds+=Math.floor(value/10);s.remainder=value%10;return Math.floor(value/10);}
+export function purchase(s,key){if(!PARTS[key])return false;const lvl=s.levels[key],cost=PARTS[key].cost[lvl];if(lvl>=3||s.creds<cost)return false;s.creds-=cost;s.levels[key]++;return true;}
+export function rank(rep){return rep>=20000?'CITY LEGEND':rep>=8000?'MOST WANTED':rep>=3000?'STREET ICON':rep>=1000?'LOCAL MENACE':'ROOKIE';}

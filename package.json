@@ -1,0 +1,1 @@
+{"name":"volt-run-neon-pursuit","version":"0.1.0","private":true,"type":"module","scripts":{"start":"node server.mjs","test":"node --test test/server.test.mjs test/progression.test.mjs test/multiplayer.test.mjs test/stunts.test.mjs test/playground.test.mjs test/customisation.test.mjs test/races.test.mjs"},"dependencies":{"three":"0.180.0","ws":"8.22.0"}}

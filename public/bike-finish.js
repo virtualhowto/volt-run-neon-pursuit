@@ -1,0 +1,12 @@
+import * as T from 'three';
+import {cleanCustom,PALETTE} from './customisation.js';
+export function applyBikeFinish(root,levels,custom){const look=cleanCustom(custom),signature=JSON.stringify([root.userData.bikeId,levels,look]);if(root.userData.finish===signature)return;root.userData.finish=signature;const accents=[0x88b82c,0xd39a46,0x55a8bc,0xda6346];
+ root.traverse(o=>{if(o.isSpotLight){o.color.set(PALETTE[look.headlight].color);return;}if(!o.isMesh||o.name==='Capacity LED')return;const rider=o.name.startsWith('RIDER');for(const m of Array.isArray(o.material)?o.material:[o.material]){
+ if(!m.userData.original)m.userData.original={color:m.color.clone(),emissive:m.emissive?.clone(),roughness:m.roughness,metalness:m.metalness};const base=m.userData.original;m.color.copy(base.color);if(m.emissive&&base.emissive)m.emissive.copy(base.emissive);m.roughness=base.roughness;m.metalness=base.metalness;
+ const tint=id=>{if(PALETTE[id]?.color)m.color.set(PALETTE[id].color);};
+ if(rider){if(m.name.includes('Graphite ceramic'))tint(look.helmet);if(m.name.includes('Technical riding jacket'))tint(look.jacket);if(m.name.includes('Cordura riding pants'))tint(look.pants);if(m.name.includes('Smoke visor')){m.color.set({smoke:'#0b2630',gold:'#bf8d3d',ice:'#76bed3'}[look.visor]);m.metalness=look.visor==='smoke'?.6:.9;m.roughness=.08;}}
+ else{if(m.name.includes('Satin black alloy')||m.name.includes('Graphite ceramic')){tint(look.paint);m.roughness={satin:.38,gloss:.15,metallic:.25}[look.finish];m.metalness=look.finish==='metallic'?.88:.5;}if(m.name.includes('LED')){tint(look.headlight);m.emissive?.set(PALETTE[look.headlight].color);}}
+ if(m.name.includes('Electric lime'))m.color.set(look.accent==='upgrade'?accents[levels.motor]:PALETTE[look.accent].color);if(m.name.includes('Brushed titanium'))m.roughness=.22-levels.handling*.03;
+ }});
+ let leds=root.getObjectByName('Capacity LEDs');if(leds){root.remove(leds);leds.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}leds=new T.Group();leds.name='Capacity LEDs';for(let i=0;i<=levels.battery;i++){const color=look.accent==='upgrade'?0x91e66c:PALETTE[look.accent].color,m=new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:1.5});const o=new T.Mesh(new T.BoxGeometry(.011,.014,.035),m);o.name='Capacity LED';o.position.set(root.userData.bikeId==='performance'?.086:.139,.78+i*.028,root.userData.bikeId==='performance'?-.2:-.08);leds.add(o);}root.add(leds);
+}

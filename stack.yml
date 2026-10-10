@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  game:
+    image: ${NEON_IMAGE:-ghcr.io/virtualhowto/volt-run-neon-pursuit:latest}
+    ports:
+      - target: 8080
+        published: 8098
+        protocol: tcp
+        mode: ingress
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+    networks:
+      - volt
+networks:
+  volt:
+    driver: overlay
